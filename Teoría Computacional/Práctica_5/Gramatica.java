@@ -247,20 +247,19 @@ public class Gramatica implements ActionListener
 				Produccion = Str_P.get(i);
 				//System.out.print("\n"+Produccion);
 				//Recorre el arreglo que contiene las reglas no generativas
-				for (j=0; j<IndVacias; j++) 
+				for (j=0; j<Vacias.size(); j++) 
 				{
 					//System.out.print("\nEntra al for de las reglas no generativas\n");
 					// Recorre la produccion a partir del 3 porque los primeros tres son: "A->"
 					for(k=3; k<Produccion.length(); k++)
 					{
 						//System.out.print("\nEntra al for que recorre la produccion\n");
-						// Analiza la primera 
-						if(Produccion.charAt(k) == Vacias.get(j))
+						// Analiza la primera
+						if(Vacias.get(j) == Produccion.charAt(k))
 						{
 							System.out.print("\n"+Produccion);
 							System.out.print("\n"+Vacias.get(j));
-							//Cadena = AnalizarProduccion(Produccion, Vacias[j]);
-
+							AnalizarProduccion(Produccion, Vacias.get(j));
 							/*for(l=0; l<contador; l++)
 							{
 								NewGramatica[0] = NewGramatica[0] + Cadena[l];
@@ -296,7 +295,7 @@ public class Gramatica implements ActionListener
 				{
 					Vacias.add(Produccion.charAt(0));
 					//Vacias[IndVacias] = Produccion.charAt(0);
-					//System.out.print("\n" + Produccion + " " + Vacias[IndVacias]);
+				//System.out.print("\n" + Produccion + " " + Vacias[IndVacias]);
 				}	
 			}	
 		}
@@ -304,33 +303,34 @@ public class Gramatica implements ActionListener
 	}
 	/* Regresa la parte que debe ser concatenada a la produccion original.
 	*/
-	public char[] AnalizarProduccion(String Produccion, char Vacia)
+	public void AnalizarProduccion(String Produccion, char Vacia)
 	{
-		int i;
+		int i,j;
 		//Arreglo que guardara la cadena que sera enviada para concatenar a la produccion principal
 		System.out.print("\n Analiza la produccion porque la contiene");
-		List <Character> cadena = new ArrayList<Character>();
-		i = 0; k = 0; 
+		List <String> Auxiliar = new ArrayList<String>();
+		List <String> AuxSub = new ArrayList<String>();
+		String Palabra, SubProd;
 		// De la Produccion que recibe empieza a analizar
-		for(j=3; j<Produccion.length(); j++)
+		for(i=3; i<Produccion.length(); i++)
 		{
-			// Guarda la parte de cadena que se va a pegar
-			AuxRN.set(i,Produccion.charAt(j));
-			System.out.print("\n" + AuxRN.get(i));
-			/*if(AuxRN[i] != '|' && AuxRN[i] != Vacia && AuxRN[i] != '\0')
+			if(Produccion.charAt(i) != '|')
 			{
-				//if(AuxRN[i] != Vacia)
-				//{
-					//if(AuxRN[i] != '\0')
-					//{
-						cadena[k] =  AuxRN[i];
-						System.out.print("\n" + cadena[k]);
-						k++; contador++;	
-					//}
-				//}			
-			}*/
-			i++;
+				Palabra = Palabra + Produccion.charAt(i);
+			}
+			else
+			{
+				System.out.println(Palabra);
+				Auxiliar.add(Palabra);
+			}
 		}
-		return cadena;
+		for(i=0; i<Auxiliar.size(); i++)
+		{
+			SubProd = Auxiliar.get(i);
+			for(j=0; j<SubProd.length(); j++)
+			{
+				System.out.println(SubProd);
+			}
+		}
 	}
 }
