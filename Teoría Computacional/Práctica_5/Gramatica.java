@@ -31,7 +31,7 @@ public class Gramatica implements ActionListener
 	String[] NoTer = {"NT1", "NT2", "NT3", "NT4", "NT5"};
 	String[] Ter = {"TER1", "TER2", "TER3", "TER4", "TER5"};
 	String[] Prod = {"1", "2", "3", "4", "5"};
-	
+
 	JTextField N, T, P;
 	JTextField[] Dato;
 	JButton Numeros, AddDatos;
@@ -166,9 +166,9 @@ public class Gramatica implements ActionListener
 				Num_Datos[j] = Integer.parseInt(Dato[j].getText());
 				System.out.print("\n" + Num_Datos[j]); 
 			}
-			Pd[0].setText("A->bb|E");
-			Pd[1].setText("A->aaaaa");
-			Pd[2].setText("B->aaaa|E");
+			Pd[0].setText("S->bb|");
+			Pd[1].setText("A->aaaB|bb");
+			Pd[2].setText("B->E");
 			/*for (j=0; j<5; j++ ) 
 			{
 				Nd[j].setText("");
@@ -263,16 +263,15 @@ public class Gramatica implements ActionListener
 							Cadena = AnalizarProduccion(Produccion, Vacias[j]);
 							for(l=0; l<contador; l++)
 							{
-								Produccion = Produccion + Cadena[l];
+								NewGramatica[0] = NewGramatica[0] + Cadena[l];
+								System.out.print("\n" + NewGramatica[0]);
 							}
-							Produccion = Produccion + "|";
-							Str_P[i] = Produccion;
-							System.out.print("\n" + Produccion);
-							System.out.print("\n" + Str_P[i]);
+							NewGramatica[0] = NewGramatica[0] + "|";
+							System.out.print("\n" + NewGramatica[0]);
+							//System.out.print("\n" + Str_P[i]);
 						}	
 					}
 				}
-				
 			}
 		}
 
@@ -302,6 +301,8 @@ public class Gramatica implements ActionListener
 		}
 		return Vacias;
 	}
+	/* Regresa la parte que debe ser concatenada a la produccion original.
+	*/
 	public char[] AnalizarProduccion(String Produccion, char Vacia)
 	{
 		//Arreglo que guardara la cadena que sera enviada para concatenar a la produccion principal
