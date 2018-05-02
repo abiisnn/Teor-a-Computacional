@@ -46,8 +46,7 @@ public class Gramatica implements ActionListener
 	// Num_Datos: 0-NoTerminales, 1-Terminales, 2-Producciones
 	int[] Num_Datos = new int [3];
 	List<String> Str_NT, Str_T, Str_P, NewGramatica;
-	int i, j, k, l, m, contador;	
-	int IndVacias = 0;
+	int i, j, k, l, m, contador;
 	List<Character> AuxRN;
 	// Método constructor
 	public Gramatica()
@@ -186,18 +185,18 @@ public class Gramatica implements ActionListener
 
 			for (j=0; j<Num_Datos[0]; j++) 
 			{
-				Str_NT.set(j, Nd[j].getText());
+				Str_NT.add(Nd[j].getText());
 				//System.out.print("\n" + Str_NT[j]);
 			}
 			for (j=0; j<Num_Datos[1]; j++) 
 			{
-				Str_T.set(j, Td[j].getText());
+				Str_T.add(Td[j].getText());
 				//System.out.print("\n" + Str_T[j]);
 			}
 			for (j=0; j<Num_Datos[2]; j++) 
 			{
-				Str_P.set(j, Pd[j].getText());
-				NewGramatica.set(j, Pd[j].getText()); 
+				Str_P.add(Pd[j].getText());
+				NewGramatica.add(Pd[j].getText()); 
 				//System.out.print("\n" + Str_P[j]);
 			}
 			LimpiarGramatica();
@@ -295,10 +294,9 @@ public class Gramatica implements ActionListener
 				//System.out.print("\nENTRA AL FOR");
 				if(Produccion.charAt(k) == 'E')
 				{
-					Vacias.set(IndVacias, Produccion.charAt(0));
+					Vacias.add(Produccion.charAt(0));
 					//Vacias[IndVacias] = Produccion.charAt(0);
 					//System.out.print("\n" + Produccion + " " + Vacias[IndVacias]);
-					IndVacias++;
 				}	
 			}	
 		}
@@ -311,8 +309,8 @@ public class Gramatica implements ActionListener
 		int i;
 		//Arreglo que guardara la cadena que sera enviada para concatenar a la produccion principal
 		System.out.print("\n Analiza la produccion porque la contiene");
-		char[] cadena = new char[20];
-		i = 0; k = 0; contador = 0;
+		List <Character> cadena = new ArrayList<Character>();
+		i = 0; k = 0; 
 		// De la Produccion que recibe empieza a analizar
 		for(j=3; j<Produccion.length(); j++)
 		{
