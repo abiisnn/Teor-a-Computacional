@@ -19,6 +19,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager.*;
+import java.util.Iterator;
+import java.util.List;  
 
 public class Gramatica implements ActionListener
 {
@@ -43,14 +45,13 @@ public class Gramatica implements ActionListener
 
 	// Num_Datos: 0-NoTerminales, 1-Terminales, 2-Producciones
 	int[] Num_Datos = new int [3];
-	String[] Str_NT, Str_T, Str_P, NewGramatica;
+	List<String> Str_NT, Str_T, Str_P, NewGramatica;
 	int i, j, k, l, m, contador;	
 	int IndVacias = 0;
-	char[] AuxRN;
+	List<Character> AuxRN;
 	// Método constructor
 	public Gramatica()
 	{
-		int i;
 		Ventana = new JFrame("Gramaticas Libres de Contexto");
 		// Caracteristicas de la ventana
 		Ventana.setLayout(null);
@@ -81,9 +82,9 @@ public class Gramatica implements ActionListener
 			Dato[i] = new JTextField();
 			Entrada.add(Dato[i]);
 		}
-		/*Dato[0].setText("NO TERMINALES");
-		Dato[1].setText("TERMINALES");
-		Dato[2].setText("PRODUCCIONES");*/
+		Dato[0].setText("1");
+		Dato[1].setText("1");
+		Dato[2].setText("3");
 		Numeros.addActionListener(this);
 		Numeros.setEnabled(true);
 		Entrada.add(Numeros);
@@ -155,10 +156,9 @@ public class Gramatica implements ActionListener
 	public void actionPerformed(ActionEvent e)
 	{
 		JButton Baux = (JButton)e.getSource();
-		int j;
 		// Num_Datos: 0-NoTerminales, 1-Terminales, 2-Producciones
 		//int[] Num_Datos = new int [3];
-		//String[] Str_NT, Str_T, Str_P; 
+		int j;
 		if(Baux == Numeros)
 		{
 			for(j=0; j<3; j++)
@@ -166,7 +166,7 @@ public class Gramatica implements ActionListener
 				Num_Datos[j] = Integer.parseInt(Dato[j].getText());
 				System.out.print("\n" + Num_Datos[j]); 
 			}
-			Pd[0].setText("S->bb|");
+			Pd[0].setText("S->bb");
 			Pd[1].setText("A->aaaB|bb");
 			Pd[2].setText("B->E");
 			/*for (j=0; j<5; j++ ) 
@@ -178,30 +178,29 @@ public class Gramatica implements ActionListener
 		} // Fin if(Baux == Numeros)
 		else if(Baux == AddDatos)
 		{
-			System.out.print("ADD DATOS\n");
-			Str_NT = new String [Num_Datos[0]];
-			Str_T = new String [Num_Datos[1]];
-			Str_P = new String [Num_Datos[2]];
-			NewGramatica = new String[10];
+			System.out.print("\nADD DATOS");
+			Str_NT = new ArrayList<String>();
+			Str_T = new ArrayList<String>();
+			Str_P = new ArrayList<String>();
+			NewGramatica = new ArrayList<String>();
 
 			for (j=0; j<Num_Datos[0]; j++) 
 			{
-				Str_NT[j] = Nd[j].getText();
+				Str_NT.set(j, Nd[j].getText());
 				//System.out.print("\n" + Str_NT[j]);
 			}
 			for (j=0; j<Num_Datos[1]; j++) 
 			{
-				Str_T[j] = Td[j].getText();
+				Str_T.set(j, Td[j].getText());
 				//System.out.print("\n" + Str_T[j]);
 			}
 			for (j=0; j<Num_Datos[2]; j++) 
 			{
-				Str_P[j] = Pd[j].getText();
-				NewGramatica[j] = Pd[j].getText(); 
+				Str_P.set(j, Pd[j].getText());
+				NewGramatica.set(j, Pd[j].getText()); 
 				//System.out.print("\n" + Str_P[j]);
 			}
 			LimpiarGramatica();
-
 		} // Fin else if (Baux == AddDatos)
 	}
 
@@ -228,14 +227,14 @@ public class Gramatica implements ActionListener
 	public void LimpiarGramatica()
 	{
 		String Produccion;
-		char[] Vacias = new char[5];
-		AuxRN =  new char[5];
-		char[] Cadena = new char[20];
+		List<Character> Vacias = new ArrayList<Character>();
+		AuxRN =  new ArrayList<Character>();
+		List<Character> Cadena = new ArrayList<Character>();
 
 		// ELIMINAR REGLAS NO GENERATIVAS
 		// Primero verifica que existan cadenas vacias entre las producciones
 		Vacias = ValidarRNG(Vacias);
-		if(Vacias[0] == '\0')
+		if(Vacias.isEmpty())
 		{
 			System.out.print("No existen Reglas no Generativas\n");
 		}
@@ -246,22 +245,24 @@ public class Gramatica implements ActionListener
 			for (i=0; i<Num_Datos[2]; i++) 
 			{
 				// Elige una de las producciones
-				Produccion = Str_P[i];
+				Produccion = Str_P.get(i);
 				//System.out.print("\n"+Produccion);
-				// Recorre el arreglo que contiene las reglas no generativas
+				//Recorre el arreglo que contiene las reglas no generativas
 				for (j=0; j<IndVacias; j++) 
 				{
-					//System.out.print("Entra al for de las reglas no generativas\n");
+					//System.out.print("\nEntra al for de las reglas no generativas\n");
 					// Recorre la produccion a partir del 3 porque los primeros tres son: "A->"
 					for(k=3; k<Produccion.length(); k++)
 					{
-						//System.out.print("Entra al for que recorre la produccion\n");
+						//System.out.print("\nEntra al for que recorre la produccion\n");
 						// Analiza la primera 
-						if(Produccion.charAt(k) == Vacias[j])
+						if(Produccion.charAt(k) == Vacias.get(j))
 						{
 							System.out.print("\n"+Produccion);
-							Cadena = AnalizarProduccion(Produccion, Vacias[j]);
-							for(l=0; l<contador; l++)
+							System.out.print("\n"+Vacias.get(j));
+							//Cadena = AnalizarProduccion(Produccion, Vacias[j]);
+
+							/*for(l=0; l<contador; l++)
 							{
 								NewGramatica[0] = NewGramatica[0] + Cadena[l];
 								System.out.print("\n" + NewGramatica[0]);
@@ -269,6 +270,7 @@ public class Gramatica implements ActionListener
 							NewGramatica[0] = NewGramatica[0] + "|";
 							System.out.print("\n" + NewGramatica[0]);
 							//System.out.print("\n" + Str_P[i]);
+							*/
 						}	
 					}
 				}
@@ -280,20 +282,21 @@ public class Gramatica implements ActionListener
 	   La primera letra de la regla no generativa para despues
 	   Verificarlo
 	 */
-	public char[] ValidarRNG(char[] Vacias)
+	public List<Character> ValidarRNG(List<Character> Vacias)
 	{
 		String Produccion;
-		Vacias = new char[5];
+		Vacias = new ArrayList<Character>();
 		for(i=0; i<Num_Datos[2]; i++)
 		{
-			Produccion = Str_P[i];
+			Produccion = Str_P.get(i);
 			//System.out.print(Produccion);
 			for(k=0; k<Produccion.length(); k++)
 			{
 				//System.out.print("\nENTRA AL FOR");
 				if(Produccion.charAt(k) == 'E')
 				{
-					Vacias[IndVacias] = Produccion.charAt(0);
+					Vacias.set(IndVacias, Produccion.charAt(0));
+					//Vacias[IndVacias] = Produccion.charAt(0);
 					//System.out.print("\n" + Produccion + " " + Vacias[IndVacias]);
 					IndVacias++;
 				}	
@@ -305,23 +308,30 @@ public class Gramatica implements ActionListener
 	*/
 	public char[] AnalizarProduccion(String Produccion, char Vacia)
 	{
+		int i;
 		//Arreglo que guardara la cadena que sera enviada para concatenar a la produccion principal
-		char[] cadena = new char[10];
-		i = 0; j = 0; k = 0; contador = 0;
+		System.out.print("\n Analiza la produccion porque la contiene");
+		char[] cadena = new char[20];
+		i = 0; k = 0; contador = 0;
 		// De la Produccion que recibe empieza a analizar
 		for(j=3; j<Produccion.length(); j++)
 		{
 			// Guarda la parte de cadena que se va a pegar
-			AuxRN[i] = Produccion.charAt(j);
-			if(AuxRN[i] != '|')
+			AuxRN.set(i,Produccion.charAt(j));
+			System.out.print("\n" + AuxRN.get(i));
+			/*if(AuxRN[i] != '|' && AuxRN[i] != Vacia && AuxRN[i] != '\0')
 			{
-				if(AuxRN[i] != Vacia)
-				{
-					cadena[k] =  AuxRN[i];
-					k++; contador++;
-				}			
-			}
-			i++; j++;
+				//if(AuxRN[i] != Vacia)
+				//{
+					//if(AuxRN[i] != '\0')
+					//{
+						cadena[k] =  AuxRN[i];
+						System.out.print("\n" + cadena[k]);
+						k++; contador++;	
+					//}
+				//}			
+			}*/
+			i++;
 		}
 		return cadena;
 	}
