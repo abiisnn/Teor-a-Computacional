@@ -299,7 +299,7 @@ public class Gramatica implements ActionListener
 		char C;
 		Vacias = new ArrayList<Character>();
 		List<String> Aux = new ArrayList<String>();
-		for(i=0; i<Num_Datos[2]; i++)
+		for(i=0; i<Prods.size(); i++)
 		{
 			Aux = Prods.get(i);
 			for(j=3; j<Aux.size(); j++)
@@ -315,6 +315,14 @@ public class Gramatica implements ActionListener
 							a = Aux.get(0);
 							C = a.charAt(0);
 							Vacias.add(C);
+							if(Aux.size()<5)
+							{
+								Prods.remove(i);
+							}
+							else
+							{
+								Aux.remove(j);
+							}
 						}
 					}
 				}
@@ -331,24 +339,25 @@ public class Gramatica implements ActionListener
 		System.out.println("\n VACIAS ------------ "+Vacias);
 		List<String> Aux = new ArrayList<String>();
 		String SubProdu, newcad;
-		for(i=0; i<Num_Datos[2]; i++)
+		// AGREGAR CADENAS
+		for(i=0; i<Prods.size(); i++)
 		{
 			Aux = Prods.get(i);
-			System.out.println("ANALIZA :    " + Aux);
-			
+			//System.out.println("ANALIZA :    " + Aux);
 			for(j=3; j<Aux.size(); j++)
 			{
 				SubProdu = Aux.get(j);
-				System.out.println("\n COMPARA:  " + SubProdu);
+			//	System.out.println("\n COMPARA:  " + SubProdu);
 				for(k=0; k<Vacias.size(); k++)
 				{
-					System.out.println(Vacias.get(k));
+			//		System.out.println(Vacias.get(k));
 					// AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 					for(l=0; l<SubProdu.length(); l++)
 					{
-						System.out.println("                 Comparamos: " + SubProdu.charAt(l) + "  busca  "+Vacias.get(k));
+			//			System.out.println("                 Comparamos: " + SubProdu.charAt(l) + "  busca  "+Vacias.get(k));
 						if(SubProdu.charAt(l)==Vacias.get(k))
 						{
+							Aux.remove(j);
 							newcad = NuevaCadena(SubProdu, Vacias.get(k));
 							(Prods.get(0)).add("|");
 							(Prods.get(0)).add(newcad);
@@ -357,11 +366,15 @@ public class Gramatica implements ActionListener
 				}
 			}
 		}
-		// IMPRIMIR GRAMATICA COMPLETA:
-		for(i=0;  i<Prods.size(); i++)
+		for(i=0; i<Prods.size(); i++)
 		{
-			System.out.println(Prods.get(i));
+			Aux = Prods.get(i);
+			if(Aux.get(3)=="|")
+			{
+				Prods.remove(i);
+			}
 		}
+		ImprimirGramaticaAuxiliar();
 	}
 	public String NuevaCadena(String SubProdu, char vacia)
 	{
@@ -378,6 +391,14 @@ public class Gramatica implements ActionListener
 		}
 		System.out.println("\n FINALMENTE TENEMOS LA CADENA:" + newcadena);
 		return newcadena;
+	}
+
+	public void ImprimirGramaticaAuxiliar()
+	{
+		for(i=0;  i<Prods.size(); i++)
+		{
+			System.out.println(Prods.get(i));
+		}
 	}
 
 }
