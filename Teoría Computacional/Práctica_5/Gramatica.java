@@ -272,7 +272,6 @@ public class Gramatica implements ActionListener
 
 	public void LimpiarGramatica()
 	{
-
 		int i,j,k;
 		AuxRN =  new ArrayList<Character>();
 		// ELIMINAR REGLAS NO GENERATIVAS
@@ -326,7 +325,6 @@ public class Gramatica implements ActionListener
 						}
 					}
 				}
-				//for(k=0; k<)
 			}
 		}
 		System.out.println("\n LA PRODUCCION QUE CONTIENE REGLAS GENERATIVAS ES " + Vacias);
@@ -366,15 +364,13 @@ public class Gramatica implements ActionListener
 				}
 			}
 		}
-		for(i=0; i<Prods.size(); i++)
+		/*for(i=0; i<Prods.size(); i++)
 		{
-			Aux = Prods.get(i);
-			if(Aux.get(3)=="|")
+			if((Prods.get(i)).get(3)=="|")
 			{
 				Prods.remove(i);
 			}
-		}
-		ImprimirGramaticaAuxiliar();
+		}*/
 	}
 	public String NuevaCadena(String SubProdu, char vacia)
 	{
