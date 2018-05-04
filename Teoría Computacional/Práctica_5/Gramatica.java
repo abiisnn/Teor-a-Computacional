@@ -307,7 +307,7 @@ public class Gramatica implements ActionListener
 	
 			ReglasNoGenerativas(Vacias);
 
-
+/*
 			List <String> Auxiliar = new ArrayList<String>();
 			List <String> SubPro =  new ArrayList<String>();
 
@@ -333,7 +333,8 @@ public class Gramatica implements ActionListener
 				}
 				System.out.println("\n"+SubPro);
 			}
-			SubPro = Analizar(SubPro);	
+			SubPro = Analizar(SubPro);
+	*/	
 		}
 	}
 
@@ -375,19 +376,49 @@ public class Gramatica implements ActionListener
 
 	public void ReglasNoGenerativas(List<Character> Vacias)
 	{
+		System.out.println("EMPIEZA A ANALIZAR REGLAS NO GENERATIVAS");
 		Vacias = new ArrayList<Character>();
 		List<String> Aux = new ArrayList<String>();
-
+		String SubProdu, newcad;
 		for(i=0; i<Num_Datos[2]; i++)
 		{
 			Aux = Prods.get(i);
+			System.out.println("ANALIZA :    " + Aux);
+			
 			for(j=3; j<Aux.size(); j++)
 			{
-				Produ = Aux.get(j);
-				System.out.println("\n"+Produ);
-				
+				SubProdu = Aux.get(j);
+				System.out.println("\n COMPARA:  " + SubProdu);
+				for(k=0; k<Vacias.size(); k++)
+				{
+					// AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+					for(l=0; l<SubProdu.length(); l++)
+					{
+						System.out.println("                 Comparamos:" + SubProdu.charAt(l) + "busca  "+Vacias.get(k));
+						if(SubProdu.charAt(l)==Vacias.get(k))
+						{
+							newcad = NuevaCadena(SubProdu, Vacias.get(k));
+						}
+					}
+				}
 			}
 		}
+	}
+	public String NuevaCadena(String SubProdu, char vacia)
+	{
+		System.out.println("\n ---- ENTRA NUEVA CADENA ----");
+		System.out.println("Analiza:" + SubProdu + "Quitando" + vacia);
+		int m;
+		String newcadena = "";
+		for(m=0; m<SubProdu.length(); m++)
+		{
+			if(SubProdu.charAt(m) != vacia)
+			{
+				newcadena =  newcadena + SubProdu.charAt(m);
+			}
+		}
+		System.out.println(newcadena);
+		return newcadena;
 	}
 
 	public List<String> GenerarSubproducciones(List <String> Auxiliar)
