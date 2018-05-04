@@ -49,6 +49,10 @@ public class Gramatica implements ActionListener
 	int[] Num_Datos = new int [3];
 	List<String> Str_NT, Str_T, Str_P, NewGramatica;
 	int i, j, k, l, m, contador;
+
+	List<Character> Vacias = new ArrayList<Character>();
+
+
 	List<Character> AuxRN;
 	// Método constructor
 	public Gramatica()
@@ -243,28 +247,6 @@ public class Gramatica implements ActionListener
 				System.out.println(Prods.get(j));
 			}
 			LimpiarGramatica();
-			/*System.out.print("\n------------------------------ADD DATOS");
-			Str_NT = new ArrayList<String>();
-			Str_T = new ArrayList<String>();
-			Str_P = new ArrayList<String>();
-			NewGramatica = new ArrayList<String>();
-
-			for (j=0; j<Num_Datos[0]; j++) 
-			{
-				Str_NT.add(Nd[j].getText());
-				//System.out.print("\n" + Str_NT[j]);
-			}
-			for (j=0; j<Num_Datos[1]; j++) 
-			{
-				Str_T.add(Td[j].getText());
-				//System.out.print("\n" + Str_T[j]);
-			}
-			for (j=0; j<Num_Datos[2]; j++) 
-			{
-				Str_P.add(Pd[j].getText());
-				NewGramatica.add(Pd[j].getText()); 
-				//System.out.print("\n" + Str_P[j]);
-			}*/
 		} // Fin else if (Baux == AddDatos)
 	}
 
@@ -292,7 +274,6 @@ public class Gramatica implements ActionListener
 	{
 
 		int i,j,k;
-		List<Character> Vacias = new ArrayList<Character>();
 		AuxRN =  new ArrayList<Character>();
 		// ELIMINAR REGLAS NO GENERATIVAS
 		// Primero verifica que existan cadenas vacias entre las producciones
@@ -304,37 +285,7 @@ public class Gramatica implements ActionListener
 		else
 		{
 			System.out.print("\n ============ HAY reglas no Generativas ===========\n");
-	
-			ReglasNoGenerativas(Vacias);
-
-/*
-			List <String> Auxiliar = new ArrayList<String>();
-			List <String> SubPro =  new ArrayList<String>();
-
-			// Generamos las subproducciones que existen
-			Auxiliar = GenerarSubproducciones(Auxiliar);
-			String Cadena;
-			for(i=0; i<Vacias.size(); i++)
-			{
-				System.out.println("\n El simbolo terminal " + Vacias.get(i) + "Contiene la cadena vacia");		
-				for(j=0; j<Auxiliar.size(); j++)
-				{
-					Cadena = Auxiliar.get(j);
-					System.out.println("\n *** Analiza " + Cadena);
-					for(k=0; k<Cadena.length(); k++)
-					{
-						if(Cadena.charAt(k)==Vacias.get(i))
-						{
-							// Analizo la subproduccion
-							System.out.println("\n" + Cadena);
-							SubPro.add(Cadena);
-						}
-					}
-				}
-				System.out.println("\n"+SubPro);
-			}
-			SubPro = Analizar(SubPro);
-	*/	
+			ReglasNoGenerativas();
 		}
 	}
 
@@ -374,10 +325,10 @@ public class Gramatica implements ActionListener
 		return Vacias;
 	}
 
-	public void ReglasNoGenerativas(List<Character> Vacias)
+	public void ReglasNoGenerativas()
 	{
 		System.out.println("EMPIEZA A ANALIZAR REGLAS NO GENERATIVAS");
-		Vacias = new ArrayList<Character>();
+		System.out.println("\n VACIAS ------------ "+Vacias);
 		List<String> Aux = new ArrayList<String>();
 		String SubProdu, newcad;
 		for(i=0; i<Num_Datos[2]; i++)
@@ -391,23 +342,31 @@ public class Gramatica implements ActionListener
 				System.out.println("\n COMPARA:  " + SubProdu);
 				for(k=0; k<Vacias.size(); k++)
 				{
+					System.out.println(Vacias.get(k));
 					// AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 					for(l=0; l<SubProdu.length(); l++)
 					{
-						System.out.println("                 Comparamos:" + SubProdu.charAt(l) + "busca  "+Vacias.get(k));
+						System.out.println("                 Comparamos: " + SubProdu.charAt(l) + "  busca  "+Vacias.get(k));
 						if(SubProdu.charAt(l)==Vacias.get(k))
 						{
 							newcad = NuevaCadena(SubProdu, Vacias.get(k));
+							(Prods.get(0)).add("|");
+							(Prods.get(0)).add(newcad);
 						}
 					}
 				}
 			}
 		}
+		// IMPRIMIR GRAMATICA COMPLETA:
+		for(i=0;  i<Prods.size(); i++)
+		{
+			System.out.println(Prods.get(i));
+		}
 	}
 	public String NuevaCadena(String SubProdu, char vacia)
 	{
 		System.out.println("\n ---- ENTRA NUEVA CADENA ----");
-		System.out.println("Analiza:" + SubProdu + "Quitando" + vacia);
+		System.out.println("Analiza:  " + SubProdu + "   Quitando   " + vacia);
 		int m;
 		String newcadena = "";
 		for(m=0; m<SubProdu.length(); m++)
@@ -417,80 +376,8 @@ public class Gramatica implements ActionListener
 				newcadena =  newcadena + SubProdu.charAt(m);
 			}
 		}
-		System.out.println(newcadena);
+		System.out.println("\n FINALMENTE TENEMOS LA CADENA:" + newcadena);
 		return newcadena;
 	}
 
-	public List<String> GenerarSubproducciones(List <String> Auxiliar)
-	{
-		String Produccion;
-		Auxiliar = new ArrayList<String>();
-		String Palabra = "";
-		for (i=0; i<Num_Datos[2]; i++) 
-		{
-			// Elige una de las producciones
-			Produccion = Str_P.get(i);
-			System.out.print("\n-------------------ANALIZA LA PRODUCCION:   "+Produccion);			
-			// Recorre la produccion a partir del 3 porque los primeros tres son: "A->"
-			for(j=2; j<Produccion.length(); j++)
-			{
-				if(Produccion.charAt(j) != '|' && Produccion.charAt(j) != '>')
-				{
-					Palabra = Palabra + Produccion.charAt(j);
-				}
-				else
-				{
-					System.out.println("\n"+Palabra);
-					Auxiliar.add(Palabra);
-					Palabra = "";
-				}
-			}		
-		}	
-		Auxiliar.remove(0);
-		System.out.println(Auxiliar);
-		return Auxiliar;
-	}
-
-	/* Regresa la parte que debe ser concatenada a la produccion original.
-	*/
-	public List<String> Analizar(List <String> SubProConcatenar)
-	{
-		System.out.println("\n EMPIEZA A ANALIZAR LAS SUBPRODUCCIONES ");
-		SubProConcatenar = new ArrayList<String>();
-		List <Character> AuxSub = new ArrayList<Character>();
-		int l,j,k,indice;
-		//Arreglo que guardara la cadena que sera enviada para concatenar a la produccion principal
-		String Palabra = "";
-		String SubProd = "";
-		indice = 0;
-		System.out.println(SubProConcatenar);
-		for(l=0; l<SubProConcatenar.size(); l++)
-		{
-			SubProd = SubProConcatenar.get(l);
-			System.out.println("\n" + SubProd);
-			/*for(j=0; j<SubProd.length(); j++)
-			{
-				AuxSub.add(SubProd.charAt(j));
-			}
-			System.out.println("\n" + AuxSub);
-			for(j=0;j<AuxSub.size();j++)
-			{
-				if(AuxSub.get(j) == Vacia)
-					indice = j;
-			}
-			if(AuxSub.contains(Vacia))
-			{
-				//System.out.println("Si contiene vacia");
-				AuxSub.remove(indice);
-				System.out.println(AuxSub);
-				for(k=0; k<AuxSub.size();k++)
-				{
-					Palabra = Palabra + AuxSub.get(k); 
-				}
-				Auxiliar.set(i, Palabra);
-			}*/
-		}
-		System.out.println(SubProConcatenar);
-		return SubProConcatenar;
-	}
 }
