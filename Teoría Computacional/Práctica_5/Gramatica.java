@@ -43,6 +43,8 @@ public class Gramatica implements ActionListener
 	JTextField[] Td;
 	JTextField[] Pd;
 
+	List<List> Prods;
+
 	// Num_Datos: 0-NoTerminales, 1-Terminales, 2-Producciones
 	int[] Num_Datos = new int [3];
 	List<String> Str_NT, Str_T, Str_P, NewGramatica;
@@ -166,7 +168,7 @@ public class Gramatica implements ActionListener
 				System.out.print("\n" + Num_Datos[j]); 
 			}
 			Pd[0].setText("S->bb");
-			Pd[1].setText("A->aaaB|bb");
+			Pd[1].setText("A->aaaB|E");
 			Pd[2].setText("B->E");
 			Pd[3].setText("C->bbBaa|aaBbb");
 			/*for (j=0; j<5; j++ ) 
@@ -178,7 +180,70 @@ public class Gramatica implements ActionListener
 		} // Fin if(Baux == Numeros)
 		else if(Baux == AddDatos)
 		{
-			System.out.print("\nADD DATOS");
+			List<String> AuxiliarStr = new ArrayList<String>();
+			Prods = new ArrayList<List>();
+			String Cadena, AuxCadena;
+			//AuxCadena = "";
+			char Car;
+
+			/* LISTA DE LISTAS XD
+			   Genera la lista de listas 
+			   Por cada producción genera otra lista para
+			   guardar las subproducciones.
+			*/
+			for(j=0; j<Num_Datos[2]; j++)
+			{
+				List<String> Produccion;
+				Produccion = new ArrayList<String>();
+				Prods.add(Produccion);
+			}
+			/* DIVIDIR SUBPRODUCCIONES
+			   De la lista principal de las producciones agarra un elemento y cada elemento
+			   pertenece a una producción, de esa producción ya se genero otra lista, la 
+			   cual contendrá la producción dividida en subproducciones:
+			   Ejemplo: (Entre parentesis esta el índice al que corresponderá de la lista)
+			   A[0] -[1]>[2] aaaB[3] |[4] bbbC[5] 
+			*/ 
+			for(j=0; j<Num_Datos[2]; j++)
+			{
+				// Obtiene una de las cadenas ingresadas
+				Cadena = Pd[j].getText();
+				System.out.println("\n" + Cadena);
+				// Agrega los primeros 3 elementos a la lista [A->]
+				for(k=0; k<3; k++)
+				{
+					// Agarra un caracter
+					Car = Cadena.charAt(k);
+					// Lo convierte a String
+					AuxCadena = Character.toString(Car);
+					// Y lo agrega a la lista de su produccion correspondiente
+					(Prods.get(j)).add(AuxCadena);
+				}
+				AuxCadena = "";
+				// Agrega los elementos sobrantes a la lista 
+				for(k=3; k<Cadena.length(); k++)
+				{
+					Car = Cadena.charAt(k);
+					if(Car == '|') // Si el caracter es "|", indica una nueva subproduccion
+					{
+						// Agrega la subproduccíon a la posicion correspondiente 
+						(Prods.get(j)).add(AuxCadena);
+						(Prods.get(j)).add("|"); // También agrega un "|"
+						AuxCadena = ""; // Limpia la Cadena auxiliar
+					}
+					else
+					{
+						// Almacena en una cadena la subproduccion que despues sera almacenada
+						AuxCadena = AuxCadena + Cadena.charAt(k);	
+					}
+				}
+				// Agrega a la lista la ultima cadena que se ha generado
+				(Prods.get(j)).add(AuxCadena);
+				System.out.println("\n------------SE HAN DIVIDIDO LAS PRODUCCIONES EN LA LISTA");
+				System.out.println(Prods.get(j));
+			}
+			LimpiarGramatica();
+			/*System.out.print("\n------------------------------ADD DATOS");
 			Str_NT = new ArrayList<String>();
 			Str_T = new ArrayList<String>();
 			Str_P = new ArrayList<String>();
@@ -199,8 +264,7 @@ public class Gramatica implements ActionListener
 				Str_P.add(Pd[j].getText());
 				NewGramatica.add(Pd[j].getText()); 
 				//System.out.print("\n" + Str_P[j]);
-			}
-			LimpiarGramatica();
+			}*/
 		} // Fin else if (Baux == AddDatos)
 	}
 
@@ -226,6 +290,7 @@ public class Gramatica implements ActionListener
 
 	public void LimpiarGramatica()
 	{
+
 		int i,j,k;
 		List<Character> Vacias = new ArrayList<Character>();
 		AuxRN =  new ArrayList<Character>();
@@ -238,7 +303,11 @@ public class Gramatica implements ActionListener
 		}
 		else
 		{
-			System.out.print("\n =========== HAY reglas Generativas ========\n");
+			System.out.print("\n ============ HAY reglas no Generativas ===========\n");
+	
+			ReglasNoGenerativas(Vacias);
+
+
 			List <String> Auxiliar = new ArrayList<String>();
 			List <String> SubPro =  new ArrayList<String>();
 
@@ -265,43 +334,62 @@ public class Gramatica implements ActionListener
 				System.out.println("\n"+SubPro);
 			}
 			SubPro = Analizar(SubPro);	
-				
-			// Analizamos y generamos un nuevo 
-			//	AnalizarSubProduccion(Produccion, Vacias.get(j));
-					/*for(l=0; l<contador; l++)
-					{
-						NewGramatica[0] = NewGramatica[0] + Cadena[l];
-						System.out.print("\n" + NewGramatica[0]);
-					}
-					NewGramatica[0] = NewGramatica[0] + "|";
-					System.out.print("\n" + NewGramatica[0]);
-					//System.out.print("\n" + Str_P[i]);
-					*/			
 		}
 	}
+
 	/* Validación de que existan cadenas vacias, agrega en un arreglo 
 	   La primera letra de la regla no generativa para despues
 	   Verificarlo
 	 */
 	public List<Character> ValidarRNG(List<Character> Vacias)
 	{
-		String Produccion;
+		String Produ, a;
+		char C;
 		Vacias = new ArrayList<Character>();
+		List<String> Aux = new ArrayList<String>();
 		for(i=0; i<Num_Datos[2]; i++)
 		{
-			Produccion = Str_P.get(i);
-			//System.out.print(Produccion);
-			for(k=0; k<Produccion.length(); k++)
+			Aux = Prods.get(i);
+			for(j=3; j<Aux.size(); j++)
 			{
-				//System.out.print("\nENTRA AL FOR");
-				if(Produccion.charAt(k) == 'E')
+				Produ = Aux.get(j);
+				System.out.println("\n"+Produ);
+				if(Produ != "|")
 				{
-					Vacias.add(Produccion.charAt(0));
-				}	
-			}	
+					for(k=0; k<Produ.length(); k++)
+					{
+						if(Produ.charAt(k)=='E')
+						{
+							a = Aux.get(0);
+							C = a.charAt(0);
+							Vacias.add(C);
+						}
+					}
+				}
+				//for(k=0; k<)
+			}
 		}
+		System.out.println("\n LA PRODUCCION QUE CONTIENE REGLAS GENERATIVAS ES " + Vacias);
 		return Vacias;
 	}
+
+	public void ReglasNoGenerativas(List<Character> Vacias)
+	{
+		Vacias = new ArrayList<Character>();
+		List<String> Aux = new ArrayList<String>();
+
+		for(i=0; i<Num_Datos[2]; i++)
+		{
+			Aux = Prods.get(i);
+			for(j=3; j<Aux.size(); j++)
+			{
+				Produ = Aux.get(j);
+				System.out.println("\n"+Produ);
+				
+			}
+		}
+	}
+
 	public List<String> GenerarSubproducciones(List <String> Auxiliar)
 	{
 		String Produccion;
