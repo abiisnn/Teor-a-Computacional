@@ -1,8 +1,8 @@
 /*	
 	Autor(a): Abigail Nicolás Sayago
 	Grupo: 2CM4
-	Fecha: 22-Febrero-2018
-	Práctica 1 - Operaciones con cadenas 
+	Fecha: 01-Mayo-2018
+	Práctica 5 - Limpieza de Gramática Libre de Contexto 
 */
 import java.util.*;
 import java.lang.reflect.Field;
@@ -49,11 +49,8 @@ public class Gramatica implements ActionListener
 	int[] Num_Datos = new int [3];
 	List<String> Str_NT, Str_T, Str_P, NewGramatica;
 	int i, j, k, l, m, contador;
-
+	// Almacena los no terminales que producen "E"
 	List<Character> Vacias = new ArrayList<Character>();
-
-
-	List<Character> AuxRN;
 	// Método constructor
 	public Gramatica()
 	{
@@ -169,12 +166,12 @@ public class Gramatica implements ActionListener
 			for(j=0; j<3; j++)
 			{
 				Num_Datos[j] = Integer.parseInt(Dato[j].getText());
-				System.out.print("\n" + Num_Datos[j]); 
+				//System.out.print("\n" + Num_Datos[j]); 
 			}
-			Pd[0].setText("S->bb");
-			Pd[1].setText("A->aaaB|E");
-			Pd[2].setText("B->E");
-			Pd[3].setText("C->bbBaa|aaBbb");
+			Pd[0].setText("S->aA|aB");
+			Pd[1].setText("A->aa|bB");
+			Pd[2].setText("B->b|E");
+			//Pd[3].setText("C->bbBaa|aaBbb");
 			/*for (j=0; j<5; j++ ) 
 			{
 				Nd[j].setText("");
@@ -190,11 +187,8 @@ public class Gramatica implements ActionListener
 			//AuxCadena = "";
 			char Car;
 
-			/* LISTA DE LISTAS XD
-			   Genera la lista de listas 
-			   Por cada producción genera otra lista para
-			   guardar las subproducciones.
-			*/
+			/* LISTA DE LISTAS XD. Genera la lista de listas. Por cada producción 
+				genera otra lista para guardar las subproducciones.*/
 			for(j=0; j<Num_Datos[2]; j++)
 			{
 				List<String> Produccion;
@@ -212,7 +206,7 @@ public class Gramatica implements ActionListener
 			{
 				// Obtiene una de las cadenas ingresadas
 				Cadena = Pd[j].getText();
-				System.out.println("\n" + Cadena);
+				//System.out.println("\n" + Cadena);
 				// Agrega los primeros 3 elementos a la lista [A->]
 				for(k=0; k<3; k++)
 				{
@@ -243,8 +237,8 @@ public class Gramatica implements ActionListener
 				}
 				// Agrega a la lista la ultima cadena que se ha generado
 				(Prods.get(j)).add(AuxCadena);
-				System.out.println("\n------------SE HAN DIVIDIDO LAS PRODUCCIONES EN LA LISTA");
-				System.out.println(Prods.get(j));
+				//System.out.println("\n------------SE HAN DIVIDIDO LAS PRODUCCIONES EN LA LISTA");
+				//System.out.println(Prods.get(j));
 			}
 			LimpiarGramatica();
 		} // Fin else if (Baux == AddDatos)
@@ -273,7 +267,6 @@ public class Gramatica implements ActionListener
 	public void LimpiarGramatica()
 	{
 		int i,j,k;
-		AuxRN =  new ArrayList<Character>();
 		// ELIMINAR REGLAS NO GENERATIVAS
 		// Primero verifica que existan cadenas vacias entre las producciones
 		Vacias = ValidarRNG(Vacias);
@@ -285,7 +278,10 @@ public class Gramatica implements ActionListener
 		{
 			System.out.print("\n ============ HAY reglas no Generativas ===========\n");
 			ReglasNoGenerativas();
+			Actualizar();
 		}
+		ImprimirGramaticaAuxiliar();
+		ImprimirGramatica();
 	}
 
 	/* Validación de que existan cadenas vacias, agrega en un arreglo 
@@ -304,7 +300,7 @@ public class Gramatica implements ActionListener
 			for(j=3; j<Aux.size(); j++)
 			{
 				Produ = Aux.get(j);
-				System.out.println("\n"+Produ);
+				//System.out.println("\n"+Produ);
 				if(Produ != "|")
 				{
 					for(k=0; k<Produ.length(); k++)
@@ -333,8 +329,8 @@ public class Gramatica implements ActionListener
 
 	public void ReglasNoGenerativas()
 	{
-		System.out.println("EMPIEZA A ANALIZAR REGLAS NO GENERATIVAS");
-		System.out.println("\n VACIAS ------------ "+Vacias);
+		//System.out.println("EMPIEZA A ANALIZAR REGLAS NO GENERATIVAS");
+		//System.out.println("\n VACIAS ------------ "+Vacias);
 		List<String> Aux = new ArrayList<String>();
 		String SubProdu, newcad;
 		// AGREGAR CADENAS
@@ -364,18 +360,11 @@ public class Gramatica implements ActionListener
 				}
 			}
 		}
-		/*for(i=0; i<Prods.size(); i++)
-		{
-			if((Prods.get(i)).get(3)=="|")
-			{
-				Prods.remove(i);
-			}
-		}*/
 	}
 	public String NuevaCadena(String SubProdu, char vacia)
 	{
-		System.out.println("\n ---- ENTRA NUEVA CADENA ----");
-		System.out.println("Analiza:  " + SubProdu + "   Quitando   " + vacia);
+		//System.out.println("\n ---- ENTRA NUEVA CADENA ----");
+		//System.out.println("Analiza:  " + SubProdu + "   Quitando   " + vacia);
 		int m;
 		String newcadena = "";
 		for(m=0; m<SubProdu.length(); m++)
@@ -385,7 +374,7 @@ public class Gramatica implements ActionListener
 				newcadena =  newcadena + SubProdu.charAt(m);
 			}
 		}
-		System.out.println("\n FINALMENTE TENEMOS LA CADENA:" + newcadena);
+		// System.out.println("\n FINALMENTE TENEMOS LA CADENA:" + newcadena);
 		return newcadena;
 	}
 
@@ -395,6 +384,34 @@ public class Gramatica implements ActionListener
 		{
 			System.out.println(Prods.get(i));
 		}
+	}
+	public void Actualizar()
+	{
+		for(i=0; i<Prods.size(); i++)
+		{
+			if((Prods.get(i)).get(3)=="|")
+			{
+				Prods.remove(i);
+				i--;
+			}
+		}
+	}
+
+	public void ImprimirGramatica()
+	{
+		AreaSalida.setText("LA GRAMATICA LIMPIA Y BIEN FORMADA ES:\n");
+		String Pro = "";
+		List<String> Aux = new ArrayList<String>();
+		for(i=0;  i<Prods.size(); i++)
+		{
+			Aux = Prods.get(i);
+			for(j=0; j<Aux.size(); j++)
+			{
+				Pro = Pro + Aux.get(j);
+			}
+			AreaSalida.setText(AreaSalida.getText() + "\n" + Pro + "\n");
+			Pro = "";
+		}	
 	}
 
 }

@@ -47,3 +47,6 @@ ListName.contains("Loquequieras");
 // Para modificar cierto elemento
 ListName.set(1, "Loquequieras"); 
 
+/* Extraer una lista que tenga los nombres entre un índice y 
+	podemos utilizar*/
+ListName.subList(0,2);
