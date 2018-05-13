@@ -312,7 +312,7 @@ public class Gramatica implements ActionListener
 		}
 		ReglasRedenominacion();
 		SimbolosMuertos();
-		
+		SimbolosInaccesibles();		
 		System.out.println("\n\n\n\n------------------------------GRAMATICA LIMPIA-----------------------------------\n");
 		ImprimirGramaticaAuxiliar();
 		//ImprimirGramatica();
@@ -622,21 +622,21 @@ public class Gramatica implements ActionListener
 		for(i=0; i<Prods.size(); i++)
 		{
 			Aux = Prods.get(i);
-			System.out.println("\n\n\n\nLA PRODUCCION QUE ANALIZA ES:              " + Aux);
+			//System.out.println("\n\n\n\nLA PRODUCCION QUE ANALIZA ES:              " + Aux);
 			for(k=0; k<AuxNoVivos.size(); k++)
 			{
 				a = Aux.get(0);
 				C = a.charAt(0);				
-				System.out.println("Compara elemento:" + C + "Con:  "+ AuxNoVivos.get(k));
+			//	System.out.println("Compara elemento:" + C + "Con:  "+ AuxNoVivos.get(k));
 				if(C==AuxNoVivos.get(k))
 				{
-					System.out.println("SON IGUALEEEEES");
+			//		System.out.println("SON IGUALEEEEES");
 					Prods.remove(i);
 				}
 				for(j=3; j<Aux.size(); j++)
 				{
 					Produ = Aux.get(j);
-					System.out.println("Usa la produccion:  " + Produ);
+			//		System.out.println("Usa la produccion:  " + Produ);
 					for(l=0; l<Produ.length(); l++)
 					{
 						if(Produ.charAt(l) ==AuxNoVivos.get(k))
@@ -677,6 +677,63 @@ public class Gramatica implements ActionListener
 		}
 		//System.out.println("Numero de Simbolos No terminales en la produccion:  " + n);
 		return n;
+	}
+
+//////////////////////////////////////////////////////////////
+// 			       SIMBOLOS INACCESIBLES
+/////////////////////////////////////////////////////////////
+	public void SimbolosInaccesibles()
+	{
+		System.out.println("\n\n--------------->>> SIMBOLOS INACCESIBLES\n\n");
+		String Produ, a;
+		char C;
+		int numero;
+		List<String>Aux = new ArrayList<String>();	
+		ObtenerSimbolosNT();
+		List<Character>AuxI = new ArrayList<Character>();	
+		AuxI = SimNT;
+		for(i=0; i<Prods.size(); i++)
+		{
+			Aux = Prods.get(i);
+			for(j=3; j<Aux.size(); j++)
+			{
+				Produ = Aux.get(j);
+				for(k=0; k<Produ.length(); k++)
+				{
+					for(l=0; l<AuxI.size(); l++)
+					{
+						if(Produ.charAt(k) == AuxI.get(l))
+						{
+							AuxI.remove(l);
+						}
+					}
+				}
+			}
+		}
+		System.out.println("LOS SIMBOLOS INNACCESIBLES SON:  " + AuxI);
+
+		// ELIMINAR SIMBOLOS INNACCESIBLES:
+		if(!AuxI.isEmpty())
+		{
+			for(i=0; i<Prods.size(); i++)
+			{
+				Aux = Prods.get(i);
+				System.out.println("\n\n\n\nLA PRODUCCION QUE ANALIZA ES:              " + Aux);
+				for(k=0; k<AuxI.size(); k++)
+				{
+					a = Aux.get(0);
+					C = a.charAt(0);				
+					System.out.println("Compara elemento:" + C + "Con:  "+ AuxI.get(k));
+					if(C==AuxI.get(k))
+					{
+						System.out.println("ELIMINA " + C);
+						Prods.remove(i);
+						i--;
+					}
+				}
+			}
+			SimbolosInaccesibles();			
+		}
 	}
 
 //////////////////////////////////////////////////////////////
