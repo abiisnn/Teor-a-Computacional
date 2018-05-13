@@ -41,8 +41,8 @@ public class Gramatica implements ActionListener
 	JScrollPane scrollPane;
 	JTextField[] Nd;
 	JTextField[] Td;
-	JTextField[] Pd;
-
+	//JTextField[] Pd;
+	String[] Pd;
 	List<List> Prods;
 
 	// Num_Datos: 0-NoTerminales, 1-Terminales, 2-Producciones
@@ -51,6 +51,8 @@ public class Gramatica implements ActionListener
 	int i, j, k, l, m, contador;
 	// Almacena los no terminales que producen "E"
 	List<Character> Vacias = new ArrayList<Character>();
+	List<Character> SimNT = new ArrayList<Character>();
+	
 	// Método constructor
 	public Gramatica()
 	{
@@ -86,7 +88,7 @@ public class Gramatica implements ActionListener
 		}
 		Dato[0].setText("1");
 		Dato[1].setText("1");
-		Dato[2].setText("4");
+		Dato[2].setText("9");
 		Numeros.addActionListener(this);
 		Numeros.setEnabled(true);
 		Entrada.add(Numeros);
@@ -122,15 +124,15 @@ public class Gramatica implements ActionListener
 
 		// Panel de datos - Producciones
 		Producciones = new JPanel(new GridLayout(1,6));
-		Pd = new JTextField[5];
+		//Pd = new JTextField[5];
 		Etiquetas2[2] = new JLabel(Nombres[2]);
 		Producciones.add(Etiquetas2[2]);
-		for(i=0; i<5; i++)
+		/*for(i=0; i<5; i++)
 		{
 			Pd[i] = new JTextField();
 			Pd[i].setText(Prod[i]);
 			Producciones.add(Pd[i]);
-		}
+		}*/
 		Producciones.setBounds(10,310,550,30);
 		
 		AddDatos = new JButton("Agregar Datos");
@@ -168,9 +170,26 @@ public class Gramatica implements ActionListener
 				Num_Datos[j] = Integer.parseInt(Dato[j].getText());
 				//System.out.print("\n" + Num_Datos[j]); 
 			}
-			Pd[0].setText("S->aA|aB");
-			Pd[1].setText("A->aa|bB");
-			Pd[2].setText("B->b|E");
+			Pd = new String[Num_Datos[2]];
+			Pd[0] = "S->aAB|A|G";
+			Pd[1] = "A->cBd|H";
+			Pd[2] = "B->e|fS|E";
+			Pd[3] = "C->gD|hDt";
+			Pd[4] = "D->x|y|z";
+			Pd[5] = "O->AH|cB";
+			Pd[6] = "F->AB|Ga";
+			Pd[7] = "G->FG";
+			Pd[8] = "H->Ha|bH|O";
+			/*Pd[0].setText("S->aAB|A|G");
+			Pd[1].setText("A->cBd|H");
+			Pd[2].setText("B->e|fS|E");
+			Pd[3].setText("C->gD|hDt");
+			Pd[4].setText("D->x|y|z");
+			Pd[5].setText("O->AH|cB");
+			Pd[6].setText("F->AB|Ga");
+			Pd[7].setText("G->FG");
+			Pd[8].setText("H->Ha|bH|O");
+		*/
 			//Pd[3].setText("C->bbBaa|aaBbb");
 			/*for (j=0; j<5; j++ ) 
 			{
@@ -205,7 +224,7 @@ public class Gramatica implements ActionListener
 			for(j=0; j<Num_Datos[2]; j++)
 			{
 				// Obtiene una de las cadenas ingresadas
-				Cadena = Pd[j].getText();
+				Cadena = Pd[j];
 				//System.out.println("\n" + Cadena);
 				// Agrega los primeros 3 elementos a la lista [A->]
 				for(k=0; k<3; k++)
@@ -238,7 +257,7 @@ public class Gramatica implements ActionListener
 				// Agrega a la lista la ultima cadena que se ha generado
 				(Prods.get(j)).add(AuxCadena);
 				//System.out.println("\n------------SE HAN DIVIDIDO LAS PRODUCCIONES EN LA LISTA");
-				//System.out.println(Prods.get(j));
+				//ImprimirGramaticaAuxiliar();
 			}
 			LimpiarGramatica();
 		} // Fin else if (Baux == AddDatos)
@@ -270,16 +289,17 @@ public class Gramatica implements ActionListener
 		// ELIMINAR REGLAS NO GENERATIVAS
 		// Primero verifica que existan cadenas vacias entre las producciones
 		Vacias = ValidarRNG(Vacias);
-		if(Vacias.isEmpty())
-		{
-			System.out.print("No existen Reglas no Generativas\n");
-		}
-		else
+		if(!Vacias.isEmpty())
 		{
 			System.out.print("\n ============ HAY reglas no Generativas ===========\n");
 			ReglasNoGenerativas();
-			Actualizar();
 		}
+		if(ValidarRDR())
+		{
+			System.out.print("\n ============ HAY reglas de Redenominacion ===========\n");
+			ReglasRedenominacion();
+		}
+
 		ImprimirGramaticaAuxiliar();
 		ImprimirGramatica();
 	}
@@ -288,6 +308,11 @@ public class Gramatica implements ActionListener
 	   La primera letra de la regla no generativa para despues
 	   Verificarlo
 	 */
+	
+//////////////////////////////////////////////////////////////
+// 			     REGLAS NO GENERATIVAS
+/////////////////////////////////////////////////////////////
+
 	public List<Character> ValidarRNG(List<Character> Vacias)
 	{
 		String Produ, a;
@@ -310,14 +335,8 @@ public class Gramatica implements ActionListener
 							a = Aux.get(0);
 							C = a.charAt(0);
 							Vacias.add(C);
-							if(Aux.size()<5)
-							{
-								Prods.remove(i);
-							}
-							else
-							{
-								Aux.remove(j);
-							}
+							Aux.remove(j);
+							Aux.remove(Aux.size()-1);
 						}
 					}
 				}
@@ -341,20 +360,20 @@ public class Gramatica implements ActionListener
 			for(j=3; j<Aux.size(); j++)
 			{
 				SubProdu = Aux.get(j);
-			//	System.out.println("\n COMPARA:  " + SubProdu);
+				//System.out.println("\n COMPARA:  " + SubProdu);
 				for(k=0; k<Vacias.size(); k++)
 				{
-			//		System.out.println(Vacias.get(k));
-					// AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 					for(l=0; l<SubProdu.length(); l++)
 					{
-			//			System.out.println("                 Comparamos: " + SubProdu.charAt(l) + "  busca  "+Vacias.get(k));
+						//System.out.println("                 Comparamos: " + SubProdu.charAt(l) + "  busca  "+Vacias.get(k));
 						if(SubProdu.charAt(l)==Vacias.get(k))
 						{
-							Aux.remove(j);
+							//Aux.remove(j);
 							newcad = NuevaCadena(SubProdu, Vacias.get(k));
-							(Prods.get(0)).add("|");
-							(Prods.get(0)).add(newcad);
+							//System.out.println("CADENA : "+newcad);
+							Aux.add("|");
+							Aux.add(newcad);
+							//System.out.println("RESULTA :    " + Aux);
 						}
 					}
 				}
@@ -363,8 +382,8 @@ public class Gramatica implements ActionListener
 	}
 	public String NuevaCadena(String SubProdu, char vacia)
 	{
-		//System.out.println("\n ---- ENTRA NUEVA CADENA ----");
-		//System.out.println("Analiza:  " + SubProdu + "   Quitando   " + vacia);
+		System.out.println("\n ---- ENTRA NUEVA CADENA ----");
+		System.out.println("Analiza:  " + SubProdu + "   Quitando   " + vacia);
 		int m;
 		String newcadena = "";
 		for(m=0; m<SubProdu.length(); m++)
@@ -374,10 +393,108 @@ public class Gramatica implements ActionListener
 				newcadena =  newcadena + SubProdu.charAt(m);
 			}
 		}
-		// System.out.println("\n FINALMENTE TENEMOS LA CADENA:" + newcadena);
+		//System.out.println("\n FINALMENTE TENEMOS LA CADENA:" + newcadena);
 		return newcadena;
 	}
 
+//////////////////////////////////////////////////////////////
+// 			     REGLAS DE REDOMINACION
+/////////////////////////////////////////////////////////////
+	public Boolean ValidarRDR()
+	{
+		ObtenerSimbolosNT();
+		String Produ;
+		Boolean a = false;
+		List<String> Aux = new ArrayList<String>();
+		for(i=0; i<Prods.size(); i++)
+		{
+			Aux = Prods.get(i);
+			for(j=3; j<Aux.size(); j++)
+			{
+				Produ = Aux.get(j);
+				//System.out.println("\n"+Produ);
+				if(Produ != "|")
+				{
+					if(Produ.length()<2)
+					{
+						//System.out.println("Produccion que analiza:" + Produ);
+						for(l=0; l<SimNT.size(); l++)
+						{
+					//	System.out.println("Produccion: " + Produ + "Simbolo NT: " + SimNT.get(l));
+							if(Produ.charAt(0)==SimNT.get(l))
+							{
+								a = true;
+								l = SimNT.size();
+								j = Aux.size();
+								i = Prods.size();
+							}
+						}
+						
+					}
+					
+				}
+			}
+		}
+		return a;
+	}
+	public void ReglasRedenominacion()
+	{
+		List<String> Aux = new ArrayList<String>();
+		List<String> P = new ArrayList<String>();
+		String Produ;
+		int num = 0;
+		for(i=0; i<Prods.size(); i++)
+		{
+			Aux = Prods.get(i);
+			for(j=3; j<Aux.size(); j++)
+			{
+				Produ = Aux.get(j);
+				//System.out.println("\n"+Produ);
+				if(Produ != "|")
+				{
+					if(Produ.length()<2)
+					{
+						for(l=0; l<SimNT.size(); l++)
+						{ // Encuentra las reglas de redenominación
+							if(Produ.charAt(0) == SimNT.get(l))
+							{
+								Aux.remove(j);
+								System.out.println("En la produccion: " + Aux.get(0) + " Encuentra:  " + SimNT.get(l));
+								P = Prods.get(l);
+								Aux.add("|");
+								for(k=3; k<P.size(); k++)
+								{
+									Aux.add(P.get(k));	
+								}
+							}
+						}
+						
+					}
+					
+				}
+			}
+		}	
+	}
+
+	public void ObtenerSimbolosNT()
+	{
+		SimNT = new ArrayList<Character>();
+		List<String> Aux = new ArrayList<String>();
+		String a;
+		char C;
+		for(i=0; i<Prods.size(); i++)
+		{
+			Aux = Prods.get(i);
+			a = Aux.get(0);
+			C = a.charAt(0);
+			SimNT.add(C);
+			a = "";
+		}	
+		System.out.println(SimNT);
+	}
+//////////////////////////////////////////////////////////////
+// 			              GENERAL
+/////////////////////////////////////////////////////////////
 	public void ImprimirGramaticaAuxiliar()
 	{
 		for(i=0;  i<Prods.size(); i++)
@@ -413,5 +530,4 @@ public class Gramatica implements ActionListener
 			Pro = "";
 		}	
 	}
-
 }
