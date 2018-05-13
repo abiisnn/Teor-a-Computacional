@@ -51,8 +51,10 @@ public class Gramatica implements ActionListener
 	int i, j, k, l, m, contador;
 	// Almacena los no terminales que producen "E"
 	List<Character> Vacias = new ArrayList<Character>();
+	List<Character> SimT = new ArrayList<Character>();
 	List<Character> SimNT = new ArrayList<Character>();
 	List<Character> SimNTVivos = new ArrayList<Character>();
+	List<Character> SimNTMuertos = new ArrayList<Character>();
 	// Método constructor
 	public Gramatica()
 	{
@@ -87,7 +89,7 @@ public class Gramatica implements ActionListener
 			Entrada.add(Dato[i]);
 		}
 		Dato[0].setText("1");
-		Dato[1].setText("1");
+		Dato[1].setText("8");
 		Dato[2].setText("9");
 		Numeros.addActionListener(this);
 		Numeros.setEnabled(true);
@@ -180,6 +182,20 @@ public class Gramatica implements ActionListener
 			Pd[6] = "F->AB|Ga";
 			Pd[7] = "G->FG";
 			Pd[8] = "H->Ha|bH|O";
+
+			SimT = new ArrayList<Character>();
+			SimT.add('a');
+			SimT.add('b');
+			SimT.add('c');
+			SimT.add('d');
+			SimT.add('e');
+			SimT.add('f');
+			SimT.add('g');
+			SimT.add('h');
+			SimT.add('x');
+			SimT.add('y');
+			SimT.add('z');
+			
 			/*Pd[0].setText("S->aAB|A|G");
 			Pd[1].setText("A->cBd|H");
 			Pd[2].setText("B->e|fS|E");
@@ -291,13 +307,15 @@ public class Gramatica implements ActionListener
 		Vacias = ValidarRNG(Vacias);
 		if(!Vacias.isEmpty())
 		{
-			System.out.print("\n ============ HAY reglas no Generativas ===========\n");
+			System.out.print("\n\n\n\n ============ HAY reglas no Generativas ===========\n\n\n\n");
 			ReglasNoGenerativas();
 		}
 		ReglasRedenominacion();
 		SimbolosMuertos();
+		
+		System.out.println("\n\n\n\n------------------------------GRAMATICA LIMPIA-----------------------------------\n");
 		ImprimirGramaticaAuxiliar();
-		ImprimirGramatica();
+		//ImprimirGramatica();
 	}
 
 	/* Validación de que existan cadenas vacias, agrega en un arreglo 
@@ -338,7 +356,7 @@ public class Gramatica implements ActionListener
 				}
 			}
 		}
-		System.out.println("\n LA PRODUCCION QUE CONTIENE REGLAS GENERATIVAS ES " + Vacias);
+		//System.out.println("\n LA PRODUCCION QUE CONTIENE REGLAS GENERATIVAS ES " + Vacias);
 		return Vacias;
 	}
 
@@ -378,8 +396,8 @@ public class Gramatica implements ActionListener
 	}
 	public String NuevaCadena(String SubProdu, char vacia)
 	{
-		System.out.println("\n ---- ENTRA NUEVA CADENA ----");
-		System.out.println("Analiza:  " + SubProdu + "   Quitando   " + vacia);
+		//System.out.println("\n ---- ENTRA NUEVA CADENA ----");
+		//System.out.println("Analiza:  " + SubProdu + "   Quitando   " + vacia);
 		int m;
 		String newcadena = "";
 		for(m=0; m<SubProdu.length(); m++)
@@ -420,7 +438,7 @@ public class Gramatica implements ActionListener
 							if(Produ.charAt(0) == SimNT.get(l))
 							{
 								Aux.remove(j);
-								System.out.println("En la produccion: " + Aux.get(0) + " Encuentra:  " + SimNT.get(l));
+								//System.out.println("En la produccion: " + Aux.get(0) + " Encuentra:  " + SimNT.get(l));
 								P = Prods.get(l);
 								Aux.add("|");
 								for(k=3; k<P.size(); k++)
@@ -451,7 +469,7 @@ public class Gramatica implements ActionListener
 			SimNT.add(C);
 			a = "";
 		}	
-		System.out.println(SimNT);
+		//System.out.println(SimNT);
 	}
 
 //////////////////////////////////////////////////////////////
@@ -460,40 +478,206 @@ public class Gramatica implements ActionListener
 
 	public void SimbolosMuertos()
 	{
-		System.out.println("---------------- SIMBOLOS MUERTOS");
+		System.out.println("\n\n---------------- SIMBOLOS MUERTOS");
 		ObtenerSimbolosNT();
+		GenerarListaVIVOSInicial();
+		ActualizarListaVIVOS();
+	}
+	/* Hace una lista de No termianles que tengan al menos una producción con sólo 
+	símbolos termianles en la parte derecha*/
+	public void GenerarListaVIVOSInicial()
+	{
 		String Produ, a;
 		char C;
-		SimNTVivos = new ArrayList<Character>();
+		SimNTVivos = new ArrayList<Character>();	
 		List<String> Aux = new ArrayList<String>();
 		for(i=0; i<Prods.size(); i++)
 		{
 			Aux = Prods.get(i);
+			//System.out.println("LA PRODUCCION QUE ANALIZA ES:   " + Aux);
 			for(j=3; j<Aux.size(); j++)
 			{
 				Produ = Aux.get(j);
-				//System.out.println("\n"+Produ);
+				//System.out.println("\n Elige una SUBPRODUCCION:   " +Produ);
 				if(Produ != "|")
 				{
-					for(k=0;k<Produ.length(); k++)
+					if(Produ.length() <2)
 					{
-						for(l=0; l<SimNT.size(); l++)
-						{ // Encuentra las reglas de redenominación
-							if(Produ.charAt(k) != SimNT.get(l))
+						//System.out.println("\n La subproduccion tiene longitud <2:   " + Produ);		
+						for(l=0; l<SimT.size(); l++)
+						{ // Guarda en la lista los simbolos vivos
+							if(Produ.charAt(0) == SimT.get(l))
 							{
 								a = Aux.get(0);
 								C = a.charAt(0);
 								SimNTVivos.add(C);
-								// AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+								j = Aux.size();
 							}
 						}
 					}
 				}
 			}
-		}	
-		System.out.println(SimNTVivos);
+		}
+		System.out.println("Lista de simbolos vivos INICIAL   " + SimNTVivos);
 	}
+	/*Dada una producción si todos los no termianles de la parte derecha pertecenen
+	a a la lista, entonces podemos incluir en la lista al no terminal de la parte
+	izquierda d ela producción.*/
+	public void ActualizarListaVIVOS()
+	{
+		String Produ, a;
+		char C;
+		int numero;
+		List<Character>AuxVivos = new ArrayList<Character>();	
+		List<Character>AuxVivos2 = new ArrayList<Character>();	
+		List<String> Aux = new ArrayList<String>();
+		List<Character>AuxNoVivos = new ArrayList<Character>();	
+		AuxVivos = SimNTVivos;
+		AuxVivos2 = SimNTVivos;
+		// GUARDA LOS QUE NO HAN SIDO ANALIZADOS
+		AuxNoVivos = SimNT;
+		for(i=0; i<AuxNoVivos.size(); i++)
+		{
+			for(j=0; j<SimNTVivos.size(); j++)
+			{
+				if(AuxNoVivos.get(i)==SimNTVivos.get(j))
+				{
+					AuxNoVivos.remove(i);
+				}
+			}
+		}
+		System.out.println("\n\n\nNo terminales que faltan por analizar" + AuxNoVivos);
 
+		int num_NT = 0;
+		int aux_NT = 0;
+		ObtenerSimbolosNT();
+		//System.out.println(SimNT);
+		for(i=0; i<Prods.size(); i++)
+		{
+			Aux = Prods.get(i);
+			//System.out.println("\n\n\n\nLA PRODUCCION QUE ANALIZA ES:              " + Aux);
+			for(int h=0; h<AuxNoVivos.size(); h++)
+			{
+				a = Aux.get(0);
+				C = a.charAt(0);				
+				//System.out.println("Compara:  " + a + "con el simbolo VIVO:  "+ AuxNoVivos.get(h));
+				if(C == AuxNoVivos.get(h))
+				{
+					num_NT = ContarNT(Aux);
+					//System.out.println("\n\n\n  ------------ ANALIZA   "+ Aux);
+					for(j=3; j<Aux.size(); j++)
+					{
+						Produ = Aux.get(j);
+						//System.out.println("\n Elige una SUBPRODUCCION:   " +Produ);
+						if(Produ != "|")
+						{
+							for(k=0; k<Produ.length(); k++)
+							{
+								for(l=0; l<AuxVivos2.size(); l++)
+								{ // Guarda en la lista los simbolos vivos
+									//System.out.println("COMPARA::: "+ Produ.charAt(k) + "con" + AuxVivos2.get(l));
+									if(Produ.charAt(k) == AuxVivos2.get(l))
+									{
+										aux_NT ++;	
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			//System.out.println("Numero total de NT:  " + num_NT + "   Numero encontrado:  " + aux_NT);
+			if(aux_NT>0 && num_NT>0)
+			{
+				if(aux_NT == num_NT)
+				{
+					a = Aux.get(0);
+					C = a.charAt(0);				
+					SimNTVivos.add(C);	
+					aux_NT = 0;
+				}	
+			}
+		}
+		System.out.println("Lista final de simbolos vivos" + SimNTVivos);
+		// GUARDA LOS QUE NO HAN SIDO ANALIZADOS
+		AuxNoVivos = SimNT;
+	
+		System.out.println("TAM de AUX:"+AuxNoVivos.size());
+		for(j=0; j<SimNTVivos.size(); j++)
+		{
+			for(i=0; i<AuxNoVivos.size(); i++)
+			{
+				if(AuxNoVivos.get(i)==SimNTVivos.get(j))
+				{
+					//System.out.println(""+ i + "J== "+j);
+					AuxNoVivos.remove(i);
+				}	
+			}	
+		}		
+		System.out.println("\n\nSIMBOLOS MUERTOS"+AuxNoVivos+"\n\n\n");
+
+		//ELIMINA SIMBOLOS MUERTOS
+
+		System.out.println(" \n\n\n------------>>>>>> ELIMINANDO SIMBOLOS MUERTOS\n\n");
+		for(i=0; i<Prods.size(); i++)
+		{
+			Aux = Prods.get(i);
+			System.out.println("\n\n\n\nLA PRODUCCION QUE ANALIZA ES:              " + Aux);
+			for(k=0; k<AuxNoVivos.size(); k++)
+			{
+				a = Aux.get(0);
+				C = a.charAt(0);				
+				System.out.println("Compara elemento:" + C + "Con:  "+ AuxNoVivos.get(k));
+				if(C==AuxNoVivos.get(k))
+				{
+					System.out.println("SON IGUALEEEEES");
+					Prods.remove(i);
+				}
+				for(j=3; j<Aux.size(); j++)
+				{
+					Produ = Aux.get(j);
+					System.out.println("Usa la produccion:  " + Produ);
+					for(l=0; l<Produ.length(); l++)
+					{
+						if(Produ.charAt(l) ==AuxNoVivos.get(k))
+						{
+							Aux.remove(j);
+						}
+					}
+				}
+			}
+		}
+
+	}
+	public int ContarNT(List<String> Aux)
+	{
+		//System.out.println("                                              + + + + + + Contandooooo");
+		String Produ, a;
+		char C;
+		int o,n;
+		n = 0;
+		for(o=3; o<Aux.size(); o++)
+		{
+			Produ = Aux.get(o);
+			//System.out.println("\n Elige una SUBPRODUCCION:   " +Produ);
+			if(Produ != "|")
+			{
+				for(k=0; k<Produ.length(); k++)
+				{
+					//System.out.println("\n La subproduccion tiene longitud <2:   " + Produ);		
+					for(l=0; l<SimNT.size(); l++)
+					{ // Guarda en la lista los simbolos vivos
+						if(Produ.charAt(k) == SimNT.get(l))
+						{
+							n++;
+						}
+					}
+				}
+			}
+		}
+		//System.out.println("Numero de Simbolos No terminales en la produccion:  " + n);
+		return n;
+	}
 
 //////////////////////////////////////////////////////////////
 // 			              GENERAL
