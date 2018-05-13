@@ -52,7 +52,7 @@ public class Gramatica implements ActionListener
 	// Almacena los no terminales que producen "E"
 	List<Character> Vacias = new ArrayList<Character>();
 	List<Character> SimNT = new ArrayList<Character>();
-	
+	List<Character> SimNTVivos = new ArrayList<Character>();
 	// Método constructor
 	public Gramatica()
 	{
@@ -294,12 +294,8 @@ public class Gramatica implements ActionListener
 			System.out.print("\n ============ HAY reglas no Generativas ===========\n");
 			ReglasNoGenerativas();
 		}
-		if(ValidarRDR())
-		{
-			System.out.print("\n ============ HAY reglas de Redenominacion ===========\n");
-			ReglasRedenominacion();
-		}
-
+		ReglasRedenominacion();
+		SimbolosMuertos();
 		ImprimirGramaticaAuxiliar();
 		ImprimirGramatica();
 	}
@@ -400,45 +396,10 @@ public class Gramatica implements ActionListener
 //////////////////////////////////////////////////////////////
 // 			     REGLAS DE REDOMINACION
 /////////////////////////////////////////////////////////////
-	public Boolean ValidarRDR()
-	{
-		ObtenerSimbolosNT();
-		String Produ;
-		Boolean a = false;
-		List<String> Aux = new ArrayList<String>();
-		for(i=0; i<Prods.size(); i++)
-		{
-			Aux = Prods.get(i);
-			for(j=3; j<Aux.size(); j++)
-			{
-				Produ = Aux.get(j);
-				//System.out.println("\n"+Produ);
-				if(Produ != "|")
-				{
-					if(Produ.length()<2)
-					{
-						//System.out.println("Produccion que analiza:" + Produ);
-						for(l=0; l<SimNT.size(); l++)
-						{
-					//	System.out.println("Produccion: " + Produ + "Simbolo NT: " + SimNT.get(l));
-							if(Produ.charAt(0)==SimNT.get(l))
-							{
-								a = true;
-								l = SimNT.size();
-								j = Aux.size();
-								i = Prods.size();
-							}
-						}
-						
-					}
-					
-				}
-			}
-		}
-		return a;
-	}
+	
 	public void ReglasRedenominacion()
 	{
+		ObtenerSimbolosNT();
 		List<String> Aux = new ArrayList<String>();
 		List<String> P = new ArrayList<String>();
 		String Produ;
@@ -492,6 +453,48 @@ public class Gramatica implements ActionListener
 		}	
 		System.out.println(SimNT);
 	}
+
+//////////////////////////////////////////////////////////////
+// 			    BUSQUEDA DE SIMBOLOS MUERTOS
+/////////////////////////////////////////////////////////////
+
+	public void SimbolosMuertos()
+	{
+		System.out.println("---------------- SIMBOLOS MUERTOS");
+		ObtenerSimbolosNT();
+		String Produ, a;
+		char C;
+		SimNTVivos = new ArrayList<Character>();
+		List<String> Aux = new ArrayList<String>();
+		for(i=0; i<Prods.size(); i++)
+		{
+			Aux = Prods.get(i);
+			for(j=3; j<Aux.size(); j++)
+			{
+				Produ = Aux.get(j);
+				//System.out.println("\n"+Produ);
+				if(Produ != "|")
+				{
+					for(k=0;k<Produ.length(); k++)
+					{
+						for(l=0; l<SimNT.size(); l++)
+						{ // Encuentra las reglas de redenominación
+							if(Produ.charAt(k) != SimNT.get(l))
+							{
+								a = Aux.get(0);
+								C = a.charAt(0);
+								SimNTVivos.add(C);
+								// AQUIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+							}
+						}
+					}
+				}
+			}
+		}	
+		System.out.println(SimNTVivos);
+	}
+
+
 //////////////////////////////////////////////////////////////
 // 			              GENERAL
 /////////////////////////////////////////////////////////////
